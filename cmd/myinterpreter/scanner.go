@@ -10,6 +10,7 @@ type Scanner struct {
 	start   int
 	current int
 	line    int
+	errors  int
 }
 
 func NewScanner(source []byte) *Scanner {
@@ -19,6 +20,7 @@ func NewScanner(source []byte) *Scanner {
 		start:   0,
 		current: 0,
 		line:    1,
+		errors:  0,
 	}
 }
 
@@ -79,5 +81,6 @@ func (s *Scanner) ScanContent() []Token {
 
 func (s *Scanner) LogErr() {
 	char := s.Source[s.start:s.current]
+	s.errors++
 	fmt.Printf("[line %v] Error: Unexpected character: %v\n", s.line, string(char))
 }
