@@ -23,10 +23,12 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error reading file: %v\n", err)
 		os.Exit(1)
 	}
+	if len(fileContents) < 0 {
+		panic("EOF null")
+	}
 
-	if len(fileContents) > 0 {
-		panic("Scanner not implemented")
-	} else {
-		fmt.Println("EOF  null") // Placeholder, remove this line when implementing the scanner
+	scanner := NewScanner(fileContents)
+	for _, token := range scanner.ScanContent() {
+		fmt.Println(token.String())
 	}
 }
