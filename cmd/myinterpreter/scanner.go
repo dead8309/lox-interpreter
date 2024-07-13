@@ -80,6 +80,20 @@ func (s *Scanner) ScanToken() {
 		} else {
 			s.AddToken(BANG, nil)
 		}
+	case '<':
+		if !s.IsAtEnd() && s.Source[s.current] == '=' {
+			s.Advance()
+			s.AddToken(LESS_EQUAL, nil)
+		} else {
+			s.AddToken(LESS, nil)
+		}
+    case '>':
+		if !s.IsAtEnd() && s.Source[s.current] == '=' {
+			s.Advance()
+			s.AddToken(GREATER_EQUAL, nil)
+		} else {
+			s.AddToken(GREATER, nil)
+		}
 	default:
 		s.LogErr()
 	}
