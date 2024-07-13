@@ -185,7 +185,12 @@ func (s *Scanner) ParseIdentifier() {
 	for IsAlphaNumeric(s.Peek()) {
 		s.Advance()
 	}
-	s.AddToken(IDENTIFIER, nil)
+	tokenType := IDENTIFIER
+	char := string(s.Source[s.start:s.current])
+	if val, exists := VALID_KEYWORDS[char]; exists {
+		tokenType = val
+	}
+	s.AddToken(tokenType, nil)
 }
 
 func IsDigit(s byte) bool {
