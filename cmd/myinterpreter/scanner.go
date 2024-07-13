@@ -73,6 +73,13 @@ func (s *Scanner) ScanToken() {
 		} else {
 			s.AddToken(EQUAL, nil)
 		}
+    case '!':
+		if !s.IsAtEnd() && s.Source[s.current] == '=' {
+			s.Advance()
+			s.AddToken(BANG_EQUAL, nil)
+		} else {
+			s.AddToken(BANG, nil)
+		}
 	default:
 		s.LogErr()
 	}
