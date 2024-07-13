@@ -114,5 +114,8 @@ type Token struct {
 
 func (t *Token) String() string {
 	l := "null"
-	return fmt.Sprintf("%s %s %v", t.Type.String(), t.Laxeme, l)
+	if t.Literal != nil {
+		l = fmt.Sprintf("%s", t.Literal)
+	}
+	return fmt.Sprintf("%v %v %v", t.Type.String(), t.Laxeme, l)
 }
