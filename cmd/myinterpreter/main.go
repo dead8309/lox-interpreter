@@ -23,9 +23,6 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error reading file: %v\n", err)
 		os.Exit(1)
 	}
-	if len(fileContents) == 0 {
-		panic("EOF null")
-	}
 
 	scanner := NewScanner(fileContents)
 	for _, token := range scanner.ScanContent() {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 )
 
 type Scanner struct {
@@ -81,6 +82,6 @@ func (s *Scanner) ScanContent() []Token {
 
 func (s *Scanner) LogErr() {
 	char := s.Source[s.start:s.current]
-	s.errors++
-	fmt.Printf("[line %v] Error: Unexpected character: %v\n", s.line, string(char))
+	fmt.Fprintf(os.Stderr,"[line %v] Error: Unexpected character: %v\n", s.line, string(char))
+    s.errors++
 }
