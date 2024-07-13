@@ -39,6 +39,10 @@ func (s *Scanner) ScanToken() {
 		s.AddToken(LeftParen, nil)
 	case ')':
 		s.AddToken(RightParen, nil)
+	case '{':
+		s.AddToken(LeftBrace, nil)
+	case '}':
+		s.AddToken(RightBrace, nil)
 	}
 }
 
