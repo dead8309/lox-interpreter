@@ -66,6 +66,13 @@ func (s *Scanner) ScanToken() {
 		s.AddToken(SLASH, nil)
 	case '\n':
 		s.line++
+	case '=':
+		if !s.IsAtEnd() && s.Source[s.current] == '=' {
+			s.Advance()
+			s.AddToken(EQUAL_EQUAL, nil)
+		} else {
+			s.AddToken(EQUAL, nil)
+		}
 	default:
 		s.LogErr()
 	}
@@ -82,6 +89,6 @@ func (s *Scanner) ScanContent() []Token {
 
 func (s *Scanner) LogErr() {
 	char := s.Source[s.start:s.current]
-	fmt.Fprintf(os.Stderr,"[line %v] Error: Unexpected character: %v\n", s.line, string(char))
-    s.errors++
+	fmt.Fprintf(os.Stderr, "[line %v] Error: Unexpected character: %v\n", s.line, string(char))
+	s.errors++
 }
