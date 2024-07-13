@@ -115,7 +115,16 @@ type Token struct {
 func (t *Token) String() string {
 	l := "null"
 	if t.Literal != nil {
-		l = fmt.Sprintf("%s", t.Literal)
+		switch value := t.Literal.(type) {
+		case float64:
+			if value == float64(int(value)) {
+				l = fmt.Sprintf("%.1f", value)
+			} else {
+				l = fmt.Sprintf("%g", value)
+			}
+		default:
+			l = fmt.Sprintf("%s", t.Literal)
+		}
 	}
 	return fmt.Sprintf("%v %v %v", t.Type.String(), t.Laxeme, l)
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 )
 
 type Scanner struct {
@@ -35,11 +36,18 @@ func (s *Scanner) Advance() byte {
 	return v
 }
 
-func (s *Scanner) Peek() string {
+func (s *Scanner) Peek() byte {
 	if s.IsAtEnd() {
-		return "\x00"
+		return '\x00'
 	}
-	return string(s.Source[s.current])
+	return s.Source[s.current]
+}
+
+func (s *Scanner) PeekNext() byte {
+	if s.current+1 >= len(s.Source) {
+		return '\x00'
+	}
+	return s.Source[s.current+1]
 }
 
 func (s *Scanner) AddToken(t TokenType, literal any) {
@@ -48,7 +56,7 @@ func (s *Scanner) AddToken(t TokenType, literal any) {
 }
 
 func (s *Scanner) ScanToken() {
-	switch s.Advance() {
+	switch c := s.Advance(); c {
 	case '(':
 		s.AddToken(LeftParen, nil)
 	case ')':
@@ -71,7 +79,7 @@ func (s *Scanner) ScanToken() {
 		s.AddToken(STAR, nil)
 	case '/':
 		if !s.IsAtEnd() && s.Source[s.current] == '/' {
-			for s.Peek() != "\n" && !s.IsAtEnd() {
+			for s.Peek() != '\n' && !s.IsAtEnd() {
 				s.Advance()
 			}
 		} else {
@@ -112,8 +120,12 @@ func (s *Scanner) ScanToken() {
 	case '"':
 		s.ParseStrings()
 	default:
-		char := s.Source[s.start:s.current]
-		s.error(fmt.Sprintf("Unexpected character: %s", char))
+		if IsDigit(c) {
+			s.ParseDigits()
+		} else {
+			char := s.Source[s.start:s.current]
+			s.error(fmt.Sprintf("Unexpected character: %s", char))
+		}
 	}
 }
 
@@ -132,8 +144,8 @@ func (s *Scanner) error(msg string) {
 }
 
 func (s *Scanner) ParseStrings() {
-	for s.Peek() != "\"" && !s.IsAtEnd() {
-		if s.Peek() == "\n" {
+	for s.Peek() != '"' && !s.IsAtEnd() {
+		if s.Peek() == '\n' {
 			s.line++
 		}
 		s.Advance()
@@ -146,4 +158,27 @@ func (s *Scanner) ParseStrings() {
 	s.Advance()
 	value := s.Source[s.start+1 : s.current-1]
 	s.AddToken(STRING, value)
+}
+
+func (s *Scanner) ParseDigits() {
+	for IsDigit(s.Peek()) {
+		s.Advance()
+	}
+
+	if s.Peek() == '.' && IsDigit(s.PeekNext()) {
+		// comsume '.'
+		s.Advance()
+
+		for IsDigit(s.Peek()) {
+			s.Advance()
+		}
+	}
+
+	value := string(s.Source[s.start:s.current])
+	num, _ := strconv.ParseFloat(value, 64)
+	s.AddToken(NUMBER, num)
+}
+
+func IsDigit(s byte) bool {
+	return s >= '0' && s <= '9'
 }
