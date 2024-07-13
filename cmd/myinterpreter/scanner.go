@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fmt"
+)
+
 type Scanner struct {
 	Source  []byte
 	Tokens  []Token
@@ -57,6 +61,10 @@ func (s *Scanner) ScanToken() {
 		s.AddToken(STAR, nil)
 	case '/':
 		s.AddToken(SLASH, nil)
+	case '\n':
+		s.line++
+	default:
+		s.LogErr()
 	}
 }
 
@@ -67,4 +75,9 @@ func (s *Scanner) ScanContent() []Token {
 	}
 	s.Tokens = append(s.Tokens, Token{EOF, "", nil, s.line})
 	return s.Tokens
+}
+
+func (s *Scanner) LogErr() {
+	char := s.Source[s.start:s.current]
+	fmt.Printf("[line %v] Error: Unexpected character: %v\n", s.line, string(char))
 }
