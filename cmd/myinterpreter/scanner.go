@@ -122,6 +122,8 @@ func (s *Scanner) ScanToken() {
 	default:
 		if IsDigit(c) {
 			s.ParseDigits()
+		} else if IsAlpha(c) {
+			s.ParseIdentifier()
 		} else {
 			char := s.Source[s.start:s.current]
 			s.error(fmt.Sprintf("Unexpected character: %s", char))
@@ -179,6 +181,23 @@ func (s *Scanner) ParseDigits() {
 	s.AddToken(NUMBER, num)
 }
 
+func (s *Scanner) ParseIdentifier() {
+	for IsAlphaNumeric(s.Peek()) {
+		s.Advance()
+	}
+	s.AddToken(IDENTIFIER, nil)
+}
+
 func IsDigit(s byte) bool {
 	return s >= '0' && s <= '9'
+}
+
+func IsAlpha(s byte) bool {
+	return (s >= 'a' && s <= 'z') ||
+		(s >= 'A' && s <= 'Z') ||
+		s == '_'
+}
+
+func IsAlphaNumeric(s byte) bool {
+	return IsAlpha(s) || IsDigit(s)
 }
