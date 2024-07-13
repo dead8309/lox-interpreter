@@ -43,6 +43,20 @@ func (s *Scanner) ScanToken() {
 		s.AddToken(LeftBrace, nil)
 	case '}':
 		s.AddToken(RightBrace, nil)
+	case ',':
+		s.AddToken(COMMA, nil)
+	case '.':
+		s.AddToken(DOT, nil)
+	case '-':
+		s.AddToken(MINUS, nil)
+	case '+':
+		s.AddToken(PLUS, nil)
+	case ';':
+		s.AddToken(SEMICOLON, nil)
+	case '*':
+		s.AddToken(STAR, nil)
+	case '/':
+		s.AddToken(SLASH, nil)
 	}
 }
 
