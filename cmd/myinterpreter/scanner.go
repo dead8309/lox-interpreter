@@ -35,6 +35,13 @@ func (s *Scanner) Advance() byte {
 	return v
 }
 
+func (s *Scanner) Peek() string {
+	if s.IsAtEnd() {
+		return "\x00"
+	}
+	return string(s.Source[s.current])
+}
+
 func (s *Scanner) AddToken(t TokenType, literal any) {
 	text := string(s.Source[s.start:s.current])
 	s.Tokens = append(s.Tokens, Token{t, text, nil, s.line})
@@ -63,9 +70,17 @@ func (s *Scanner) ScanToken() {
 	case '*':
 		s.AddToken(STAR, nil)
 	case '/':
-		s.AddToken(SLASH, nil)
+		if !s.IsAtEnd() && s.Source[s.current] == '/' {
+			for s.Peek() != "\n" && !s.IsAtEnd() {
+				s.Advance()
+			}
+		} else {
+			s.AddToken(SLASH, nil)
+		}
 	case '\n':
 		s.line++
+	case ' ', '\r', '\t':
+		break
 	case '=':
 		if !s.IsAtEnd() && s.Source[s.current] == '=' {
 			s.Advance()
@@ -73,7 +88,7 @@ func (s *Scanner) ScanToken() {
 		} else {
 			s.AddToken(EQUAL, nil)
 		}
-    case '!':
+	case '!':
 		if !s.IsAtEnd() && s.Source[s.current] == '=' {
 			s.Advance()
 			s.AddToken(BANG_EQUAL, nil)
@@ -87,7 +102,7 @@ func (s *Scanner) ScanToken() {
 		} else {
 			s.AddToken(LESS, nil)
 		}
-    case '>':
+	case '>':
 		if !s.IsAtEnd() && s.Source[s.current] == '=' {
 			s.Advance()
 			s.AddToken(GREATER_EQUAL, nil)
