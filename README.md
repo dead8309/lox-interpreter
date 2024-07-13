@@ -4,4 +4,6 @@
 
 lox interpreter in go
 
+## Why?
 
+This project was created as part of Codecrafters' "Build Your Own Interpreter" challenge. Following the book [Crafting Interpreters](https://craftinginterpreters.com/introduction.html), I wanted to explore Go by building a simple (incomplete) Lox interpreter.
