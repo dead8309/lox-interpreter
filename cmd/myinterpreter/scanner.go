@@ -44,7 +44,7 @@ func (s *Scanner) Peek() string {
 
 func (s *Scanner) AddToken(t TokenType, literal any) {
 	text := string(s.Source[s.start:s.current])
-	s.Tokens = append(s.Tokens, Token{t, text, nil, s.line})
+	s.Tokens = append(s.Tokens, Token{t, text, literal, s.line})
 }
 
 func (s *Scanner) ScanToken() {
@@ -109,8 +109,11 @@ func (s *Scanner) ScanToken() {
 		} else {
 			s.AddToken(GREATER, nil)
 		}
+	case '"':
+		s.ParseStrings()
 	default:
-		s.LogErr()
+		char := s.Source[s.start:s.current]
+		s.error(fmt.Sprintf("Unexpected character: %s", char))
 	}
 }
 
@@ -123,8 +126,24 @@ func (s *Scanner) ScanContent() []Token {
 	return s.Tokens
 }
 
-func (s *Scanner) LogErr() {
-	char := s.Source[s.start:s.current]
-	fmt.Fprintf(os.Stderr, "[line %v] Error: Unexpected character: %v\n", s.line, string(char))
+func (s *Scanner) error(msg string) {
+	fmt.Fprintf(os.Stderr, "[line %v] Error: %s\n", s.line, msg)
 	s.errors++
+}
+
+func (s *Scanner) ParseStrings() {
+	for s.Peek() != "\"" && !s.IsAtEnd() {
+		if s.Peek() == "\n" {
+			s.line++
+		}
+		s.Advance()
+	}
+	if s.IsAtEnd() {
+		s.error("Unterminated string.")
+		return
+	}
+	// For closing "
+	s.Advance()
+	value := s.Source[s.start+1 : s.current-1]
+	s.AddToken(STRING, value)
 }
